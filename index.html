@@ -1,0 +1,51 @@
+<html>
+    <head>
+        <script src="https://code.jquery.com/jquery-1.8.3.min.js"></script>
+        <script src="ace/ace.js"></script>
+        <script src="ace/theme-twilight.js"></script>
+        <script src="ace/mode-json.js"></script>
+        <script src="jquery-ace.min.js"></script>
+    </head>
+    <body>
+        <textarea id="my-code-area1" rows="4" style="width: 100%; height: 500px;" value="{}"></textarea>
+        <script>
+          function JSONEditor(textAreaId, json = {}, opts = {}) {
+            this.opts = { theme: 'twilight', lang: 'json' };
+            this.elId = textAreaId;
+            this.$el = $(textAreaId);
+            this.load();
+
+            this.decorator = this.$el.data('ace');
+            this.editor = this.decorator.editor;
+            this.ace = this.editor.ace;
+            
+            json = json || JSON.parse(this.$el.val());
+            this.setValue(json);
+            this.registerEvents();
+          }
+          
+          JSONEditor.prototype.load = function () { this.$el.ace(this.opts); };
+
+          JSONEditor.prototype.setValue = function (json) {
+            this.ace.setValue(JSON.stringify(json, null, '\t'))    
+          };
+
+          JSONEditor.prototype.getValue = function (json) {
+            return JSON.parse(this.ace.getValue().toString());
+          }
+
+          JSONEditor.prototype.registerEvents = function() {
+            var that = this;
+            this.ace.on('change', function(e) {
+              var json;
+              try { json = that.getValue(); } catch(ex) { };
+              that.$el.val(JSON.stringify(json || { }));
+            });
+          };
+
+          $(function(){
+            new JSONEditor('#my-code-area1');
+          })
+        </script>
+    </body>
+</html>
